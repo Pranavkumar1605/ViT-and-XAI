@@ -1,0 +1,960 @@
+run_id: rule_nifty_pv11
+seed: 0
+model_config: model_vit.yaml
+train_config: train.yaml
+xai_config: xai.yaml
+indicators_config: indicators.yaml
+paths:
+  data_dir: data
+  results_dir: results
+data:
+  start: '2008-01-01'
+  end: '2025-12-31'
+  index_ticker: ^NSEI
+  history_tolerance_days: 30
+  calendar_min_share: 0.5
+  max_tickers: null
+  tickers:
+  - ADANIENT
+  - ADANIPORTS
+  - APOLLOHOSP
+  - ASIANPAINT
+  - AXISBANK
+  - BAJAJ-AUTO
+  - BAJFINANCE
+  - BAJAJFINSV
+  - BEL
+  - BHARTIARTL
+  - CIPLA
+  - COALINDIA
+  - DRREDDY
+  - EICHERMOT
+  - ETERNAL
+  - GRASIM
+  - HCLTECH
+  - HDFCBANK
+  - HDFCLIFE
+  - HINDALCO
+  - HINDUNILVR
+  - ICICIBANK
+  - INDIGO
+  - INFY
+  - ITC
+  - JIOFIN
+  - JSWSTEEL
+  - KOTAKBANK
+  - LT
+  - M&M
+  - MARUTI
+  - MAXHEALTH
+  - NESTLEIND
+  - NTPC
+  - ONGC
+  - POWERGRID
+  - RELIANCE
+  - SBILIFE
+  - SBIN
+  - SHRIRAMFIN
+  - SUNPHARMA
+  - TATACONSUM
+  - TMPV
+  - TATASTEEL
+  - TCS
+  - TECHM
+  - TITAN
+  - TRENT
+  - ULTRACEMCO
+  - WIPRO
+labels:
+  method: peak_valley
+  window: 11
+  theta: 0.01
+  names:
+  - Hold
+  - Buy
+  - Sell
+  file: labels_pv11.parquet
+folds:
+  train_years: 5
+  val_months: 6
+  first_test_year: 2013
+  last_test_year: 2025
+image:
+  window: 65
+  clip: 5.0
+model:
+  name: vit
+  img_size:
+  - 90
+  - 65
+  patch_size:
+  - 10
+  - 13
+  in_chans: 1
+  num_classes: 3
+  embed_dim: 192
+  depth: 6
+  num_heads: 6
+  mlp_ratio: 4.0
+  qkv_bias: true
+  drop_rate: 0.1
+  attn_drop_rate: 0.0
+train:
+  seeds:
+  - 0
+  batch_size: 256
+  max_epochs: 50
+  patience: 6
+  optimizer: adamw
+  lr: 0.0003
+  weight_decay: 0.05
+  scheduler: cosine
+  warmup_epochs: 2
+  class_weights: false
+  amp: true
+  num_workers: 0
+xai:
+  methods:
+  - integrated_gradients
+  - row_occlusion
+  - chefer
+  samples_per_class: 200
+  target: predicted
+  batch_size: 32
+  integrated_gradients:
+    n_steps: 50
+    internal_batch_size: 64
+  row_occlusion:
+    fill_value: 0.0
+  chefer:
+    start_layer: 0
+  top_k_plot: 20
+indicators:
+  active_subset: null
+  subsets: {}
+  indicators:
+  - name: SMA_10
+    func: SMA
+    inputs:
+    - close
+    params:
+      timeperiod: 10
+    category: overlap
+    transform: rel_close
+  - name: SMA_20
+    func: SMA
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: overlap
+    transform: rel_close
+  - name: SMA_50
+    func: SMA
+    inputs:
+    - close
+    params:
+      timeperiod: 50
+    category: overlap
+    transform: rel_close
+  - name: EMA_10
+    func: EMA
+    inputs:
+    - close
+    params:
+      timeperiod: 10
+    category: overlap
+    transform: rel_close
+  - name: EMA_20
+    func: EMA
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: overlap
+    transform: rel_close
+  - name: EMA_50
+    func: EMA
+    inputs:
+    - close
+    params:
+      timeperiod: 50
+    category: overlap
+    transform: rel_close
+  - name: WMA_20
+    func: WMA
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: overlap
+    transform: rel_close
+  - name: DEMA_20
+    func: DEMA
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: overlap
+    transform: rel_close
+  - name: TEMA_20
+    func: TEMA
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: overlap
+    transform: rel_close
+  - name: TRIMA_20
+    func: TRIMA
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: overlap
+    transform: rel_close
+  - name: KAMA_20
+    func: KAMA
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: overlap
+    transform: rel_close
+  - name: MIDPOINT_14
+    func: MIDPOINT
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: overlap
+    transform: rel_close
+  - name: MIDPRICE_14
+    func: MIDPRICE
+    inputs:
+    - high
+    - low
+    params:
+      timeperiod: 14
+    category: overlap
+    transform: rel_close
+  - name: BB_UPPER_20
+    func: BBANDS
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+      nbdevup: 2
+      nbdevdn: 2
+    output: 0
+    category: overlap
+    transform: rel_close
+  - name: BB_MIDDLE_20
+    func: BBANDS
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+      nbdevup: 2
+      nbdevdn: 2
+    output: 1
+    category: overlap
+    transform: rel_close
+  - name: BB_LOWER_20
+    func: BBANDS
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+      nbdevup: 2
+      nbdevdn: 2
+    output: 2
+    category: overlap
+    transform: rel_close
+  - name: HT_TRENDLINE
+    func: HT_TRENDLINE
+    inputs:
+    - close
+    params: {}
+    category: overlap
+    transform: rel_close
+  - name: SAR
+    func: SAR
+    inputs:
+    - high
+    - low
+    params:
+      acceleration: 0.02
+      maximum: 0.2
+    category: overlap
+    transform: rel_close
+  - name: RSI_7
+    func: RSI
+    inputs:
+    - close
+    params:
+      timeperiod: 7
+    category: momentum
+    transform: none
+  - name: RSI_14
+    func: RSI
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: RSI_21
+    func: RSI
+    inputs:
+    - close
+    params:
+      timeperiod: 21
+    category: momentum
+    transform: none
+  - name: ROC_5
+    func: ROC
+    inputs:
+    - close
+    params:
+      timeperiod: 5
+    category: momentum
+    transform: none
+  - name: ROC_10
+    func: ROC
+    inputs:
+    - close
+    params:
+      timeperiod: 10
+    category: momentum
+    transform: none
+  - name: ROC_20
+    func: ROC
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: momentum
+    transform: none
+  - name: MOM_5
+    func: MOM
+    inputs:
+    - close
+    params:
+      timeperiod: 5
+    category: momentum
+    transform: div_close
+  - name: MOM_10
+    func: MOM
+    inputs:
+    - close
+    params:
+      timeperiod: 10
+    category: momentum
+    transform: div_close
+  - name: MOM_20
+    func: MOM
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: momentum
+    transform: div_close
+  - name: CMO_14
+    func: CMO
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: CMO_28
+    func: CMO
+    inputs:
+    - close
+    params:
+      timeperiod: 28
+    category: momentum
+    transform: none
+  - name: WILLR_14
+    func: WILLR
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: WILLR_28
+    func: WILLR
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 28
+    category: momentum
+    transform: none
+  - name: CCI_14
+    func: CCI
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: CCI_20
+    func: CCI
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 20
+    category: momentum
+    transform: none
+  - name: MACD
+    func: MACD
+    inputs:
+    - close
+    params:
+      fastperiod: 12
+      slowperiod: 26
+      signalperiod: 9
+    output: 0
+    category: momentum
+    transform: div_close
+  - name: MACD_SIGNAL
+    func: MACD
+    inputs:
+    - close
+    params:
+      fastperiod: 12
+      slowperiod: 26
+      signalperiod: 9
+    output: 1
+    category: momentum
+    transform: div_close
+  - name: MACD_HIST
+    func: MACD
+    inputs:
+    - close
+    params:
+      fastperiod: 12
+      slowperiod: 26
+      signalperiod: 9
+    output: 2
+    category: momentum
+    transform: div_close
+  - name: PPO
+    func: PPO
+    inputs:
+    - close
+    params:
+      fastperiod: 12
+      slowperiod: 26
+      matype: 0
+    category: momentum
+    transform: none
+  - name: APO
+    func: APO
+    inputs:
+    - close
+    params:
+      fastperiod: 12
+      slowperiod: 26
+      matype: 0
+    category: momentum
+    transform: div_close
+  - name: ADX_14
+    func: ADX
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: ADXR_14
+    func: ADXR
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: DX_14
+    func: DX
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: PLUS_DI_14
+    func: PLUS_DI
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: MINUS_DI_14
+    func: MINUS_DI
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: AROON_DOWN_14
+    func: AROON
+    inputs:
+    - high
+    - low
+    params:
+      timeperiod: 14
+    output: 0
+    category: momentum
+    transform: none
+  - name: AROON_UP_14
+    func: AROON
+    inputs:
+    - high
+    - low
+    params:
+      timeperiod: 14
+    output: 1
+    category: momentum
+    transform: none
+  - name: AROONOSC_14
+    func: AROONOSC
+    inputs:
+    - high
+    - low
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: STOCH_K
+    func: STOCH
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      fastk_period: 14
+      slowk_period: 3
+      slowd_period: 3
+    output: 0
+    category: momentum
+    transform: none
+  - name: STOCH_D
+    func: STOCH
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      fastk_period: 14
+      slowk_period: 3
+      slowd_period: 3
+    output: 1
+    category: momentum
+    transform: none
+  - name: STOCHF_K
+    func: STOCHF
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      fastk_period: 14
+      fastd_period: 3
+    output: 0
+    category: momentum
+    transform: none
+  - name: STOCHF_D
+    func: STOCHF
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      fastk_period: 14
+      fastd_period: 3
+    output: 1
+    category: momentum
+    transform: none
+  - name: STOCHRSI_K
+    func: STOCHRSI
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+      fastk_period: 5
+      fastd_period: 3
+    output: 0
+    category: momentum
+    transform: none
+  - name: STOCHRSI_D
+    func: STOCHRSI
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+      fastk_period: 5
+      fastd_period: 3
+    output: 1
+    category: momentum
+    transform: none
+  - name: MFI_14
+    func: MFI
+    inputs:
+    - high
+    - low
+    - close
+    - volume
+    params:
+      timeperiod: 14
+    category: momentum
+    transform: none
+  - name: TRIX_15
+    func: TRIX
+    inputs:
+    - close
+    params:
+      timeperiod: 15
+    category: momentum
+    transform: none
+  - name: ULTOSC
+    func: ULTOSC
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod1: 7
+      timeperiod2: 14
+      timeperiod3: 28
+    category: momentum
+    transform: none
+  - name: BOP
+    func: BOP
+    inputs:
+    - open
+    - high
+    - low
+    - close
+    params: {}
+    category: momentum
+    transform: none
+  - name: OBV
+    func: OBV
+    inputs:
+    - close
+    - volume
+    params: {}
+    category: volume
+    transform: diff_div_vol20
+  - name: AD
+    func: AD
+    inputs:
+    - high
+    - low
+    - close
+    - volume
+    params: {}
+    category: volume
+    transform: diff_div_vol20
+  - name: ADOSC_3_10
+    func: ADOSC
+    inputs:
+    - high
+    - low
+    - close
+    - volume
+    params:
+      fastperiod: 3
+      slowperiod: 10
+    category: volume
+    transform: div_vol20
+  - name: ADOSC_5_20
+    func: ADOSC
+    inputs:
+    - high
+    - low
+    - close
+    - volume
+    params:
+      fastperiod: 5
+      slowperiod: 20
+    category: volume
+    transform: div_vol20
+  - name: VOL_RATIO_20
+    func: VOL_RATIO
+    inputs:
+    - volume
+    params:
+      timeperiod: 20
+    category: volume
+    transform: none
+  - name: MFI_28
+    func: MFI
+    inputs:
+    - high
+    - low
+    - close
+    - volume
+    params:
+      timeperiod: 28
+    category: volume
+    transform: none
+  - name: ATR_14
+    func: ATR
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: volatility
+    transform: div_close
+  - name: ATR_28
+    func: ATR
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 28
+    category: volatility
+    transform: div_close
+  - name: NATR_14
+    func: NATR
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 14
+    category: volatility
+    transform: none
+  - name: NATR_28
+    func: NATR
+    inputs:
+    - high
+    - low
+    - close
+    params:
+      timeperiod: 28
+    category: volatility
+    transform: none
+  - name: TRANGE
+    func: TRANGE
+    inputs:
+    - high
+    - low
+    - close
+    params: {}
+    category: volatility
+    transform: div_close
+  - name: RET_STD_10
+    func: RET_STD
+    inputs:
+    - close
+    params:
+      timeperiod: 10
+    category: volatility
+    transform: none
+  - name: RET_STD_20
+    func: RET_STD
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: volatility
+    transform: none
+  - name: BB_WIDTH_20
+    func: BB_WIDTH
+    inputs:
+    - close
+    params:
+      timeperiod: 20
+    category: volatility
+    transform: none
+  - name: AVGPRICE
+    func: AVGPRICE
+    inputs:
+    - open
+    - high
+    - low
+    - close
+    params: {}
+    category: price_transform
+    transform: rel_close
+  - name: MEDPRICE
+    func: MEDPRICE
+    inputs:
+    - high
+    - low
+    params: {}
+    category: price_transform
+    transform: rel_close
+  - name: TYPPRICE
+    func: TYPPRICE
+    inputs:
+    - high
+    - low
+    - close
+    params: {}
+    category: price_transform
+    transform: rel_close
+  - name: WCLPRICE
+    func: WCLPRICE
+    inputs:
+    - high
+    - low
+    - close
+    params: {}
+    category: price_transform
+    transform: rel_close
+  - name: BETA_20
+    func: BETA
+    inputs:
+    - index_close
+    - close
+    params:
+      timeperiod: 20
+    category: statistics
+    transform: none
+  - name: CORREL_20
+    func: CORREL
+    inputs:
+    - close
+    - index_close
+    params:
+      timeperiod: 20
+    category: statistics
+    transform: none
+  - name: LINEARREG_14
+    func: LINEARREG
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: statistics
+    transform: rel_close
+  - name: LINEARREG_ANGLE_14
+    func: LINEARREG_ANGLE
+    inputs:
+    - logclose100
+    params:
+      timeperiod: 14
+    category: statistics
+    transform: none
+  - name: LINEARREG_SLOPE_14
+    func: LINEARREG_SLOPE
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: statistics
+    transform: div_close
+  - name: LINEARREG_INTERCEPT_14
+    func: LINEARREG_INTERCEPT
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: statistics
+    transform: rel_close
+  - name: TSF_14
+    func: TSF
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: statistics
+    transform: rel_close
+  - name: STDDEV_14
+    func: STDDEV
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: statistics
+    transform: div_close
+  - name: VAR_14
+    func: VAR
+    inputs:
+    - close
+    params:
+      timeperiod: 14
+    category: statistics
+    transform: div_close_sq
+  - name: HT_DCPERIOD
+    func: HT_DCPERIOD
+    inputs:
+    - close
+    params: {}
+    category: statistics
+    transform: none
+  - name: HT_DCPHASE
+    func: HT_DCPHASE
+    inputs:
+    - close
+    params: {}
+    category: statistics
+    transform: none
+  - name: HT_PHASOR_INPHASE
+    func: HT_PHASOR
+    inputs:
+    - close
+    params: {}
+    output: 0
+    category: statistics
+    transform: div_close
+  - name: HT_PHASOR_QUADRATURE
+    func: HT_PHASOR
+    inputs:
+    - close
+    params: {}
+    output: 1
+    category: statistics
+    transform: div_close
+  - name: HT_SINE
+    func: HT_SINE
+    inputs:
+    - close
+    params: {}
+    output: 0
+    category: statistics
+    transform: none
+  - name: HT_LEADSINE
+    func: HT_SINE
+    inputs:
+    - close
+    params: {}
+    output: 1
+    category: statistics
+    transform: none
+  - name: HT_TRENDMODE
+    func: HT_TRENDMODE
+    inputs:
+    - close
+    params: {}
+    category: statistics
+    transform: none

@@ -1,0 +1,4 @@
+,accuracy,accuracy,balanced_accuracy,balanced_accuracy,macro_f1,macro_f1,majority_class_accuracy,majority_class_accuracy,precision_Hold,precision_Hold,recall_Hold,recall_Hold,f1_Hold,f1_Hold,precision_Buy,precision_Buy,recall_Buy,recall_Buy,f1_Buy,f1_Buy,precision_Sell,precision_Sell,recall_Sell,recall_Sell,f1_Sell,f1_Sell
+,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std
+seed,,,,,,,,,,,,,,,,,,,,,,,,,,
+0,0.6449237195553154,0.007282596789906428,0.8648411822016236,0.0025466736026328687,0.5250202644119865,0.006651594555562747,0.8756792413233628,0.0027129278386796743,1.0,0.0,0.5945235466048711,0.007640020807898536,0.7456801614519765,0.006028905841514224,0.28273764268830115,0.01746142786959427,1.0,0.0,0.44056829267150815,0.02120547456871541,0.24161705483785842,0.01995723839360161,1.0,0.0,0.3888123391124749,0.025953813156321646

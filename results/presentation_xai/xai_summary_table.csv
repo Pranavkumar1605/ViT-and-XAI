@@ -1,0 +1,5 @@
+run,IG vs occlusion,IG vs Chefer,occlusion vs Chefer,IG share last 13 days %,Buy/Sell same-indicator corr (IG signed)
+±1% labels,0.54,-0.12,-0.02,20.24,0.76
+Balanced θ=0.0038,0.46,-0.08,-0.01,20.22,0.21
+Peak/valley,0.72,0.62,0.38,52.95,0.47
+Peak/valley + class weights,0.84,0.79,0.57,50.67,0.61

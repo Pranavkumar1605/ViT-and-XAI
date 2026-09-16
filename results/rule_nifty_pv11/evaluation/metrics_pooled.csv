@@ -1,0 +1,2 @@
+seed,n,accuracy,balanced_accuracy,macro_f1,majority_class_accuracy,precision_Hold,recall_Hold,f1_Hold,support_Hold,predicted_Hold,precision_Buy,recall_Buy,f1_Buy,support_Buy,predicted_Buy,precision_Sell,recall_Sell,f1_Sell,support_Sell,predicted_Sell
+0,134307,0.6448956495193847,0.8648295525399902,0.5242937504723643,0.8756952355424512,1.0,0.5944886576199707,0.7456793810090065,117612,69919,0.28172554347826084,1.0,0.4396035405734881,8294,29440,0.2403857159207966,1.0,0.38759832983459824,8401,34948

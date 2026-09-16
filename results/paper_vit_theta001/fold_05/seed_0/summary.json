@@ -1,0 +1,15 @@
+{
+  "fold": 5,
+  "test_year": 2012,
+  "seed": 0,
+  "device": "cuda",
+  "best_epoch": 1,
+  "best_val_loss": 1.060546875,
+  "epochs_run": 8,
+  "n_train": 10188,
+  "n_val": 1134,
+  "n_test": 2241,
+  "test_acc": 0.7420794288264168,
+  "train_time_s": 12.582367420196533,
+  "torch": "2.10.0+cu128"
+}
