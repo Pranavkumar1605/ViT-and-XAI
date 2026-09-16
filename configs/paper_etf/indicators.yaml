@@ -1,0 +1,92 @@
+# The 65 indicators of the base paper (Table 2), in the table's category order (statistics first).
+# The paper names the functions but not their periods; it only says the horizons are "between one
+# week to three weeks". Period-based indicators therefore use 14 days, with these exceptions so that no
+# two rows are identical: MA 7 days and SMA 10 days (BBANDS middle is SMA 14), FASTK / FASTD use a 5-day
+# %K (SLOWK is the 14-day %K smoothed over 3 days, which equals a 14-day FASTD). MACD / MACDEXT / MACDFIX /
+# APO / PPO / ULTOSC keep their standard settings.
+# Field meanings and transforms are the same as in configs/indicators.yaml. Price-level values are
+# made relative to the close so the 9 ETFs (very different price levels) share one standardization.
+# ROC, ROCP, ROCR and ROCR100 are affine copies of each other; all four are kept because the paper lists them.
+# MACD, MACDEXT and MACDFIX use different outputs (line, histogram, signal) so the rows are not copies.
+
+active_subset: null
+subsets: {}
+
+indicators:
+  # ---------------- Statistics (9) ----------------
+  # TA-Lib BETA(real0, real1) regresses real1 on real0, so the index goes first.
+  - {name: BETA,                func: BETA,      inputs: [index_close, close], params: {timeperiod: 14}, category: statistics, transform: none}
+  - {name: CORREL,              func: CORREL,    inputs: [close, index_close], params: {timeperiod: 14}, category: statistics, transform: none}
+  - {name: LINEARREG,           func: LINEARREG, inputs: [close], params: {timeperiod: 14}, category: statistics, transform: rel_close}
+  - {name: LINEARREG_ANGLE,     func: LINEARREG_ANGLE, inputs: [logclose100], params: {timeperiod: 14}, category: statistics, transform: none}
+  - {name: LINEARREG_INTERCEPT, func: LINEARREG_INTERCEPT, inputs: [close], params: {timeperiod: 14}, category: statistics, transform: rel_close}
+  - {name: LINEARREG_SLOPE,     func: LINEARREG_SLOPE, inputs: [close], params: {timeperiod: 14}, category: statistics, transform: div_close}
+  - {name: STDDEV,              func: STDDEV,    inputs: [close], params: {timeperiod: 14}, category: statistics, transform: div_close}
+  - {name: TSF,                 func: TSF,       inputs: [close], params: {timeperiod: 14}, category: statistics, transform: rel_close}
+  - {name: VAR,                 func: VAR,       inputs: [close], params: {timeperiod: 14}, category: statistics, transform: div_close_sq}
+
+  # ---------------- Price transform (4) ----------------
+  - {name: AVGPRICE,  func: AVGPRICE, inputs: [open, high, low, close], params: {}, category: price_transform, transform: rel_close}
+  - {name: MEDPRICE,  func: MEDPRICE, inputs: [high, low], params: {}, category: price_transform, transform: rel_close}
+  - {name: TYPPRICE,  func: TYPPRICE, inputs: [high, low, close], params: {}, category: price_transform, transform: rel_close}
+  - {name: WCLPRICE,  func: WCLPRICE, inputs: [high, low, close], params: {}, category: price_transform, transform: rel_close}
+
+  # ---------------- Volatility (1) ----------------
+  - {name: TRANGE,    func: TRANGE,   inputs: [high, low, close], params: {}, category: volatility, transform: div_close}
+
+  # ---------------- Volume (3) ----------------
+  - {name: AD,        func: AD,       inputs: [high, low, close, volume], params: {}, category: volume, transform: diff_div_vol20}
+  - {name: ADOSC,     func: ADOSC,    inputs: [high, low, close, volume], params: {fastperiod: 3, slowperiod: 10}, category: volume, transform: div_vol20}
+  - {name: OBV,       func: OBV,      inputs: [close, volume], params: {}, category: volume, transform: diff_div_vol20}
+
+  # ---------------- Momentum (34) ----------------
+  - {name: ADX,       func: ADX,      inputs: [high, low, close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: ADXR,      func: ADXR,     inputs: [high, low, close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: APO,       func: APO,      inputs: [close], params: {fastperiod: 12, slowperiod: 26, matype: 0}, category: momentum, transform: div_close}
+  - {name: AROONUP,   func: AROON,    inputs: [high, low], params: {timeperiod: 14}, output: 1, category: momentum, transform: none}
+  - {name: AROONDOWN, func: AROON,    inputs: [high, low], params: {timeperiod: 14}, output: 0, category: momentum, transform: none}
+  - {name: AROONOSC,  func: AROONOSC, inputs: [high, low], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: BOP,       func: BOP,      inputs: [open, high, low, close], params: {}, category: momentum, transform: none}
+  - {name: CCI,       func: CCI,      inputs: [high, low, close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: CMO,       func: CMO,      inputs: [close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: DX,        func: DX,       inputs: [high, low, close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: FASTD,     func: STOCHF,   inputs: [high, low, close], params: {fastk_period: 5, fastd_period: 3}, output: 1, category: momentum, transform: none}
+  - {name: FASTDRSI,  func: STOCHRSI, inputs: [close], params: {timeperiod: 14, fastk_period: 5, fastd_period: 3}, output: 1, category: momentum, transform: none}
+  - {name: FASTK,     func: STOCHF,   inputs: [high, low, close], params: {fastk_period: 5, fastd_period: 3}, output: 0, category: momentum, transform: none}
+  - {name: FASTKRSI,  func: STOCHRSI, inputs: [close], params: {timeperiod: 14, fastk_period: 5, fastd_period: 3}, output: 0, category: momentum, transform: none}
+  - {name: MACD,      func: MACD,     inputs: [close], params: {fastperiod: 12, slowperiod: 26, signalperiod: 9}, output: 0, category: momentum, transform: div_close}
+  - {name: MACDEXT,   func: MACDEXT,  inputs: [close], params: {fastperiod: 12, fastmatype: 1, slowperiod: 26, slowmatype: 1, signalperiod: 9, signalmatype: 1}, output: 2, category: momentum, transform: div_close}
+  - {name: MACDFIX,   func: MACDFIX,  inputs: [close], params: {signalperiod: 9}, output: 1, category: momentum, transform: div_close}
+  - {name: MFI,       func: MFI,      inputs: [high, low, close, volume], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: MINUS_DI,  func: MINUS_DI, inputs: [high, low, close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: MINUS_DM,  func: MINUS_DM, inputs: [high, low], params: {timeperiod: 14}, category: momentum, transform: div_close}
+  - {name: MOM,       func: MOM,      inputs: [close], params: {timeperiod: 14}, category: momentum, transform: div_close}
+  - {name: PLUS_DI,   func: PLUS_DI,  inputs: [high, low, close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: PLUS_DM,   func: PLUS_DM,  inputs: [high, low], params: {timeperiod: 14}, category: momentum, transform: div_close}
+  - {name: PPO,       func: PPO,      inputs: [close], params: {fastperiod: 12, slowperiod: 26, matype: 0}, category: momentum, transform: none}
+  - {name: ROC,       func: ROC,      inputs: [close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: ROCP,      func: ROCP,     inputs: [close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: ROCR,      func: ROCR,     inputs: [close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: ROCR100,   func: ROCR100,  inputs: [close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: RSI,       func: RSI,      inputs: [close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: SLOWD,     func: STOCH,    inputs: [high, low, close], params: {fastk_period: 14, slowk_period: 3, slowd_period: 3}, output: 1, category: momentum, transform: none}
+  - {name: SLOWK,     func: STOCH,    inputs: [high, low, close], params: {fastk_period: 14, slowk_period: 3, slowd_period: 3}, output: 0, category: momentum, transform: none}
+  - {name: TRIX,      func: TRIX,     inputs: [close], params: {timeperiod: 14}, category: momentum, transform: none}
+  - {name: ULTOSC,    func: ULTOSC,   inputs: [high, low, close], params: {timeperiod1: 7, timeperiod2: 14, timeperiod3: 28}, category: momentum, transform: none}
+  - {name: WILLR,     func: WILLR,    inputs: [high, low, close], params: {timeperiod: 14}, category: momentum, transform: none}
+
+  # ---------------- Overlap studies (14) ----------------
+  - {name: BBANDSL,      func: BBANDS,    inputs: [close], params: {timeperiod: 14, nbdevup: 2, nbdevdn: 2}, output: 2, category: overlap, transform: rel_close}
+  - {name: BBANDSM,      func: BBANDS,    inputs: [close], params: {timeperiod: 14, nbdevup: 2, nbdevdn: 2}, output: 1, category: overlap, transform: rel_close}
+  - {name: BBANDSU,      func: BBANDS,    inputs: [close], params: {timeperiod: 14, nbdevup: 2, nbdevdn: 2}, output: 0, category: overlap, transform: rel_close}
+  - {name: DEMA,         func: DEMA,      inputs: [close], params: {timeperiod: 14}, category: overlap, transform: rel_close}
+  - {name: EMA,          func: EMA,       inputs: [close], params: {timeperiod: 14}, category: overlap, transform: rel_close}
+  - {name: HT_TRENDLINE, func: HT_TRENDLINE, inputs: [close], params: {}, category: overlap, transform: rel_close}
+  - {name: KAMA,         func: KAMA,      inputs: [close], params: {timeperiod: 14}, category: overlap, transform: rel_close}
+  - {name: MA,           func: MA,        inputs: [close], params: {timeperiod: 7, matype: 0}, category: overlap, transform: rel_close}
+  - {name: MIDPOINT,     func: MIDPOINT,  inputs: [close], params: {timeperiod: 14}, category: overlap, transform: rel_close}
+  - {name: MIDPRICE,     func: MIDPRICE,  inputs: [high, low], params: {timeperiod: 14}, category: overlap, transform: rel_close}
+  - {name: SMA,          func: SMA,       inputs: [close], params: {timeperiod: 10}, category: overlap, transform: rel_close}
+  - {name: TEMA,         func: TEMA,      inputs: [close], params: {timeperiod: 14}, category: overlap, transform: rel_close}
+  - {name: TRIMA,        func: TRIMA,     inputs: [close], params: {timeperiod: 14}, category: overlap, transform: rel_close}
+  - {name: WMA,          func: WMA,       inputs: [close], params: {timeperiod: 14}, category: overlap, transform: rel_close}

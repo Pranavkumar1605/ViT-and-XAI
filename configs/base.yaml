@@ -1,0 +1,90 @@
+# Main config. Other files are pulled in by name below, so a new model or XAI setup
+# is a new YAML file plus a one-line change here (or --set model_config=...).
+run_id: vit_90x65
+seed: 0
+
+model_config: model_vit.yaml
+train_config: train.yaml
+xai_config: xai.yaml
+indicators_config: indicators.yaml
+
+paths:
+  data_dir: data
+  results_dir: results
+
+data:
+  start: "2008-01-01"
+  end: "2025-12-31"
+  index_ticker: "^NSEI"          # benchmark for BETA / CORREL
+  history_tolerance_days: 30     # a ticker must start within this many days of `start` and end near `end`
+  calendar_min_share: 0.5        # a weekday is a session if at least this share of kept stocks traded
+  max_tickers: null              # set a small number for smoke runs
+  # Current NIFTY 50 constituents (verify against NSE before a final run; the
+  # full-history filter drops any ticker that did not trade over the whole period).
+  tickers:
+    - ADANIENT
+    - ADANIPORTS
+    - APOLLOHOSP
+    - ASIANPAINT
+    - AXISBANK
+    - BAJAJ-AUTO
+    - BAJFINANCE
+    - BAJAJFINSV
+    - BEL
+    - BHARTIARTL
+    - CIPLA
+    - COALINDIA
+    - DRREDDY
+    - EICHERMOT
+    - ETERNAL
+    - GRASIM
+    - HCLTECH
+    - HDFCBANK
+    - HDFCLIFE
+    - HINDALCO
+    - HINDUNILVR
+    - ICICIBANK
+    - INDIGO
+    - INFY
+    - ITC
+    - JIOFIN
+    - JSWSTEEL
+    - KOTAKBANK
+    - LT
+    - M&M
+    - MARUTI
+    - MAXHEALTH
+    - NESTLEIND
+    - NTPC
+    - ONGC
+    - POWERGRID
+    - RELIANCE
+    - SBILIFE
+    - SBIN
+    - SHRIRAMFIN
+    - SUNPHARMA
+    - TATACONSUM
+    - TMPV
+    - TATASTEEL
+    - TCS
+    - TECHM
+    - TITAN
+    - TRENT
+    - ULTRACEMCO
+    - WIPRO
+
+labels:
+  method: threshold              # threshold | peak_valley (see vitxai/labels/labels.py)
+  window: 11                     # peak_valley only
+  theta: 0.01                    # Buy if r > theta, Sell if r < -theta, Hold otherwise
+  names: [Hold, Buy, Sell]       # class ids 0, 1, 2
+
+folds:
+  train_years: 5
+  val_months: 6                  # last months of the training window used for early stopping
+  first_test_year: 2013
+  last_test_year: 2025
+
+image:
+  window: 65                     # days (columns); rows = number of indicators
+  clip: 5.0                      # clip standardized values to +-clip

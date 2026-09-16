@@ -1,0 +1,12 @@
+name: vit
+img_size: [65, 65]               # [indicators, days], paper Figure 1
+patch_size: [13, 13]             # -> 5 x 5 = 25 tokens (patch size not stated in the paper)
+in_chans: 1
+num_classes: 3
+embed_dim: 192
+depth: 6
+num_heads: 6
+mlp_ratio: 4.0
+qkv_bias: true
+drop_rate: 0.1
+attn_drop_rate: 0.0

@@ -1,0 +1,16 @@
+methods: [integrated_gradients, row_occlusion, chefer]   # keys in vitxai.xai.XAI_REGISTRY
+samples_per_class: 200           # per test fold, per predicted class
+target: predicted                # predicted | actual: class whose score is explained (samples are grouped by predicted class)
+batch_size: 32
+
+integrated_gradients:
+  n_steps: 50
+  internal_batch_size: 64
+
+row_occlusion:
+  fill_value: 0.0                # 0 = training mean after standardization
+
+chefer:
+  start_layer: 0
+
+top_k_plot: 20

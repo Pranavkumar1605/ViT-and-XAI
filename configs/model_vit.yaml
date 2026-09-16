@@ -1,0 +1,12 @@
+name: vit                        # key in vitxai.models.MODEL_REGISTRY
+img_size: [90, 65]               # [indicators, days]
+patch_size: [10, 13]             # -> 9 x 5 = 45 tokens
+in_chans: 1
+num_classes: 3
+embed_dim: 192
+depth: 6
+num_heads: 6
+mlp_ratio: 4.0
+qkv_bias: true
+drop_rate: 0.1                   # after position embedding, attention projection, MLP and before the head
+attn_drop_rate: 0.0

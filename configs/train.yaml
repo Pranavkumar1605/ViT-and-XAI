@@ -1,0 +1,12 @@
+seeds: [0]                       # add more seeds later, e.g. [0, 1, 2]
+batch_size: 256
+max_epochs: 50
+patience: 6                      # early stopping on validation loss
+optimizer: adamw                 # adamw | adam
+lr: 3.0e-4
+weight_decay: 0.05
+scheduler: cosine                # none | cosine
+warmup_epochs: 2
+class_weights: false             # true -> inverse class frequency from the training segment
+amp: true                        # used only when CUDA is available
+num_workers: 0

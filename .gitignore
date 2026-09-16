@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+data/
+results/
+data_smoke/
+data_smoke_paper/
+data_paper_etf/

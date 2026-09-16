@@ -1,0 +1,53 @@
+# Replication of Gezici & Sefer (2024), IEEE Access 12:24165: 9 US ETFs, 65 indicators x 65 days,
+# one joint model for all ETFs, 5-year training window, test years 2007-2021.
+# Run any script with:  --config-dir configs/paper_etf
+# Balanced threshold:   --set labels.theta=0.0038 labels.file=labels_theta0038.parquet run_id=paper_vit_theta0038
+# Peak/valley labels:   --set labels.method=peak_valley labels.file=labels_pv11.parquet run_id=paper_vit_pv11
+#   (these reproduce the class split of the paper's confusion matrices: ~88% Hold, ~6% Buy, ~6% Sell)
+#
+# Filled in where the paper gives no value (see README "Base-paper replication"):
+#   indicator periods, ViT size and training settings, patch size, benchmark for BETA / CORREL,
+#   validation split for early stopping, and standardization fitted on training dates only.
+run_id: paper_vit_theta001
+seed: 0
+
+model_config: model_vit.yaml
+train_config: ../train.yaml
+xai_config: ../xai.yaml
+indicators_config: indicators.yaml
+
+paths:
+  data_dir: data_paper_etf
+  results_dir: results
+
+data:
+  start: "2002-01-01"
+  end: "2021-12-31"              # paper: 1/1/2002 to 1/1/2022
+  index_ticker: "^GSPC"          # benchmark for BETA / CORREL (not stated in the paper)
+  yahoo_suffix: ""               # US listings
+  history_tolerance_days: 30
+  calendar_min_share: 0.5
+  max_tickers: null
+  tickers: [XLF, XLU, QQQ, SPY, XLP, EWZ, EWH, XLY, XLE]   # paper Table 1
+
+labels:
+  method: threshold              # threshold (paper text) | peak_valley (CNN-TA 11-day valleys/peaks)
+  window: 11                     # peak_valley only
+  theta: 0.01                    # threshold only; paper main results; 0.0038 = their balanced case
+  file: labels_theta001.parquet
+  names: [Hold, Buy, Sell]
+
+folds:
+  train_years: 5
+  val_months: 6                  # not in the paper; needed for early stopping
+  first_test_year: 2007          # "each year between 2007 and 2021 is tested once"
+  last_test_year: 2021
+
+image:
+  window: 65
+  clip: 5.0
+
+backtest:
+  start_money: 10000.0           # paper Tables 9-11
+  commission: 1.0                # per transaction, in dollars
+  risk_free_annual: 0.0          # paper uses the 3-month T-bill; set a constant here if wanted
