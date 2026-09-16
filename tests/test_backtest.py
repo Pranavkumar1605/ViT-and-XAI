@@ -30,3 +30,18 @@ def test_backtest_ticker_summary_and_buy_and_hold():
     assert model["transactions"] == 0 and model["final_capital"] == 10000.0 and model["idle_ratio_pct"] == 100.0
     assert bah["transactions"] == 1 and abs(bah["final_capital"] - 20000.0) < 1e-6
     assert list(curve.columns) == ["date", "model", "buy_and_hold"]
+
+
+def test_rule_baseline_uses_past_closes_only():
+    import importlib.util, pathlib
+    path = pathlib.Path(__file__).resolve().parents[1] / "scripts" / "09_rule_baseline.py"
+    import sys
+    sys.path.insert(0, str(path.parent))
+    spec = importlib.util.spec_from_file_location("rule", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    close = pd.Series([5.0, 4.0, 3.0, 4.0, 6.0, 2.0], index=pd.bdate_range("2020-01-01", periods=6))
+    sig = mod.rule_signals(close, 3)
+    assert sig.tolist() == [HOLD, HOLD, BUY, SELL, SELL, BUY]   # day 3: 4 is the highest of (4, 3, 4)
+    changed = close.copy(); changed.iloc[-1] = 100.0          # a later close cannot change earlier signals
+    assert (mod.rule_signals(changed, 3).iloc[:-1] == sig.iloc[:-1]).all()

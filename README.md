@@ -28,6 +28,7 @@ On GPU, use `notebooks/colab_run.ipynb`.
 | 6 Evaluation | `python scripts/06_evaluate.py` | `results/<run>/evaluation/metrics_*.csv`, confusion matrices |
 | 7 XAI | `python scripts/07_xai.py [--fold ..] [--aggregate-only]` | `results/<run>/xai/seed_S/fold_XX/attributions_<method>.npz`, `summary/` rankings, recency, agreement, figures |
 | 8 Backtest | `python scripts/08_backtest.py` | `results/<run>/backtest/backtest_per_ticker_seedS.csv`, `backtest_summary_seedS.csv`, `equity_seedS.parquet` |
+| 9 Rule baseline | `python scripts/09_rule_baseline.py --set run_id=rule_...` | no-model predictions (close = lowest / highest of the last 6 days) on the ViT's test samples; evaluate with 06 and 08 |
 
 Every script accepts overrides such as `--set train.max_epochs=1 data.max_tickers=3 run_id=test`.
 Smoke run (CPU, a few minutes):
@@ -139,7 +140,7 @@ trades it made before calling it profitable.
 ```
 configs/      base.yaml  indicators.yaml  model_vit.yaml  train.yaml  xai.yaml  paper_etf/
 src/vitxai/   config  seed  data/  features/  labels/  images/  models/  train/  eval/  xai/  viz/
-scripts/      01_download ... 08_backtest
+scripts/      01_download ... 09_rule_baseline
 tests/        indicators (causality, count, scale-free), labels/folds (leakage), dataset, metrics, xai, backtest, paper config
 notebooks/    colab_run.ipynb
 ```
